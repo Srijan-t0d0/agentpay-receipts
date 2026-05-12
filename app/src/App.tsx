@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
@@ -35,7 +35,7 @@ function App() {
     <ConnectionProvider endpoint={RPC_ENDPOINT}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
-          <BrowserRouter>
+          <HashRouter>
             <Shell>
               <Routes>
                 <Route path="/" element={<Dashboard tasks={tasks} />} />
@@ -46,7 +46,7 @@ function App() {
                 <Route path="/submit" element={<SubmitPage />} />
               </Routes>
             </Shell>
-          </BrowserRouter>
+          </HashRouter>
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>

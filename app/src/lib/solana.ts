@@ -1,6 +1,6 @@
 export type SupportedCluster = "localnet" | "devnet";
 
-export const CLUSTER = (import.meta.env.VITE_SOLANA_CLUSTER ?? "localnet") as SupportedCluster;
+export const CLUSTER = (import.meta.env.VITE_SOLANA_CLUSTER ?? "devnet") as SupportedCluster;
 export const RPC_ENDPOINT =
   import.meta.env.VITE_SOLANA_RPC_ENDPOINT ??
   (CLUSTER === "devnet" ? "https://api.devnet.solana.com" : "http://127.0.0.1:8899");
