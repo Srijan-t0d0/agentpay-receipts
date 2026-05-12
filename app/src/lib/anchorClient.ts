@@ -12,6 +12,29 @@ type WalletLike = {
   signAllTransactions?: anchor.Wallet["signAllTransactions"];
 };
 
+type TaskEscrowRaw = {
+  payer: PublicKey;
+  agent: PublicKey;
+  taskId: number[];
+  taskHash: number[];
+  deliverableHash: number[];
+  receiptHash: number[];
+  amountLamports: anchor.BN;
+  status: unknown;
+  createdAt: anchor.BN;
+  fundedAt: anchor.BN;
+  approvedAt: anchor.BN;
+  paidAt: anchor.BN;
+};
+
+type ReadableTaskProgram = Program & {
+  account: Program["account"] & {
+    taskEscrow: {
+      fetch(address: PublicKey): Promise<TaskEscrowRaw>;
+    };
+  };
+};
+
 export function getConnection() {
   return new Connection(RPC_ENDPOINT, "confirmed");
 }
@@ -63,7 +86,7 @@ function statusName(status: unknown) {
   return String(status ?? "unknown");
 }
 
-function accountProgram() {
+function accountProgram(): ReadableTaskProgram {
   const readOnlyWallet = {
     publicKey: PublicKey.default,
     signTransaction: async () => {
@@ -74,14 +97,14 @@ function accountProgram() {
     },
   };
   const provider = new anchor.AnchorProvider(getConnection(), readOnlyWallet, { commitment: "confirmed" });
-  return new Program(idl as anchor.Idl, provider) as Program;
+  return new Program(idl as anchor.Idl, provider) as unknown as ReadableTaskProgram;
 }
 
 export async function fetchTaskEscrowAccount(taskEscrowPda?: string): Promise<OnchainTaskEscrow | null> {
   if (!taskEscrowPda) return null;
 
   try {
-    const account = await (accountProgram().account as any).taskEscrow.fetch(new PublicKey(taskEscrowPda));
+    const account = await accountProgram().account.taskEscrow.fetch(new PublicKey(taskEscrowPda));
     const deliverableHash = prefixedHash("dlv_", Array.from(account.deliverableHash as number[]));
     const receiptHash = prefixedHash("rcpt_", Array.from(account.receiptHash as number[]));
 

@@ -13,11 +13,18 @@ export function ReceiptVerifier({ hash, task }: { hash?: string; task?: AgentTas
 
   useEffect(() => {
     let mounted = true;
-    setOnchain(null);
 
-    if (!task?.onchain?.taskEscrowPda) return;
+    if (!task?.onchain?.taskEscrowPda) {
+      Promise.resolve().then(() => {
+        if (mounted) setOnchain(null);
+      });
+      return;
+    }
 
-    setLoading(true);
+    Promise.resolve().then(() => {
+      if (mounted) setLoading(true);
+    });
+
     fetchTaskEscrowAccount(task.onchain.taskEscrowPda)
       .then((account) => {
         if (mounted) setOnchain(account);
