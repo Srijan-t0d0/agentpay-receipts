@@ -1,5 +1,6 @@
 {
   "name": "agentpay-receipts",
+  "type": "module",
   "license": "ISC",
   "scripts": {
     "build": "anchor build && npm --prefix app run build",
