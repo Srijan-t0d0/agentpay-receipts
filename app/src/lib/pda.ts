@@ -1,4 +1,5 @@
 import { PublicKey } from "@solana/web3.js";
+import { Buffer } from "buffer";
 import idl from "../idl/agentpay_escrow.json";
 
 export const PROGRAM_ID = new PublicKey(idl.address);
