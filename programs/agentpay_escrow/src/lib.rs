@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
 
-declare_id!("FKqzKRqigoQWZBqSse7nht51y8kjBGLHF2LqBQddDimk");
+declare_id!("JCW13wdxf6zPVu6NNCS2uMrCm3x9PP5JKJN64Cmo1vQj");
 
 #[program]
 pub mod agentpay_escrow {

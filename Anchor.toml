@@ -5,11 +5,11 @@ package_manager = "npm"
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-agentpay_escrow = "FKqzKRqigoQWZBqSse7nht51y8kjBGLHF2LqBQddDimk"
-
 [programs.devnet]
-agentpay_escrow = "FKqzKRqigoQWZBqSse7nht51y8kjBGLHF2LqBQddDimk"
+agentpay_escrow = "JCW13wdxf6zPVu6NNCS2uMrCm3x9PP5JKJN64Cmo1vQj"
+
+[programs.localnet]
+agentpay_escrow = "JCW13wdxf6zPVu6NNCS2uMrCm3x9PP5JKJN64Cmo1vQj"
 
 [registry]
 url = "https://api.apr.dev"
