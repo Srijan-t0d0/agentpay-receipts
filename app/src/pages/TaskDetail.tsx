@@ -1,14 +1,16 @@
 import * as anchor from "@coral-xyz/anchor";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { ArrowRight, ExternalLink, Play, ShieldCheck, Wallet } from "lucide-react";
+import { ArrowRight, Ban, ExternalLink, Play, ShieldCheck, Wallet } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import { AgentRunPanel } from "../components/AgentRunPanel";
 import { ProviderEvidence } from "../components/ProviderEvidence";
 import { ReceiptCard } from "../components/ReceiptCard";
 import { StatusPill } from "../components/StatusPill";
 import { Timeline } from "../components/Timeline";
-import { approveTaskOnchain, createTaskOnchain, fundTaskOnchain, releasePaymentOnchain } from "../lib/anchorClient";
+import { approveTaskOnchain, cancelTaskOnchain, createTaskOnchain, fundTaskOnchain, releasePaymentOnchain } from "../lib/anchorClient";
 import { generateAgentRun } from "../lib/demoAgent";
-import { canonicalJson, hashBytes, hashHex, makeTx, taskIdBytes } from "../lib/hashes";
+import { canonicalJson, hashBytes, hashHex, makeTx } from "../lib/hashes";
+import { taskIdBytes } from "../lib/ids";
 import { receiptPayload } from "../lib/receipts";
 import { explorerTx, shortAddress } from "../lib/solana";
 import type { AgentTask } from "../types";
@@ -75,19 +77,36 @@ export function TaskDetail({ tasks, updateTask }: { tasks: AgentTask[]; updateTa
     updateTask({ ...task, status: "funded", fundedAt: new Date().toISOString(), escrowTx: makeTx() });
   }
 
+  function completeRun(baseTask = task) {
+    const run = generateAgentRun(baseTask.provider, baseTask.inputWallet);
+    updateTask({
+      ...baseTask,
+      status: "delivered",
+      deliveredAt: new Date().toISOString(),
+      providerEvidence: run.evidence,
+      deliverableSummary: run.summary,
+      deliverableJson: run.json,
+    });
+  }
+
   function runAgent() {
-    updateTask({ ...task, status: "running" });
-    window.setTimeout(() => {
-      const run = generateAgentRun(task.provider, task.inputWallet);
-      updateTask({
-        ...task,
-        status: "delivered",
-        deliveredAt: new Date().toISOString(),
-        providerEvidence: run.evidence,
-        deliverableSummary: run.summary,
-        deliverableJson: run.json,
-      });
-    }, 700);
+    const runningTask: AgentTask = { ...task, status: "running" };
+    updateTask(runningTask);
+    window.setTimeout(() => completeRun(runningTask), 700);
+  }
+
+  async function cancel() {
+    let cancelTx: string | undefined;
+
+    if (task.onchain?.taskEscrowPda && wallet.publicKey) {
+      cancelTx = await cancelTaskOnchain(wallet, task.onchain.taskEscrowPda);
+    }
+
+    updateTask({
+      ...task,
+      status: "cancelled",
+      cancelTx: cancelTx ?? makeTx(),
+    });
   }
 
   async function approve() {
@@ -133,6 +152,7 @@ export function TaskDetail({ tasks, updateTask }: { tasks: AgentTask[]; updateTa
       if (task.status === "draft") await createOnchain();
       else if (task.status === "created") await fund();
       else if (task.status === "funded") runAgent();
+      else if (task.status === "running") completeRun();
       else if (task.status === "delivered") await approve();
       else if (task.status === "approved") await release();
       else if (task.status === "paid") navigate(`/receipt/${task.id}`);
@@ -145,7 +165,7 @@ export function TaskDetail({ tasks, updateTask }: { tasks: AgentTask[]; updateTa
     draft: wallet.publicKey ? "Create Onchain Task" : "Connect Wallet First",
     created: "Fund Escrow",
     funded: "Run Agent",
-    running: "Running Agent",
+    running: "Complete Run",
     delivered: "Approve Payout",
     approved: "Release Payment",
     paid: "View Receipt",
@@ -160,10 +180,17 @@ export function TaskDetail({ tasks, updateTask }: { tasks: AgentTask[]; updateTa
           <h1>{task.title}</h1>
           <p>{task.description}</p>
         </div>
-        <button className="primary-action" disabled={task.status === "running" || (task.status === "draft" && !wallet.publicKey)} onClick={act}>
+        <div className="hero-actions">
+          {["created", "funded"].includes(task.status) ? (
+            <button className="secondary-action" onClick={cancel}>
+              <Ban size={18} /> Cancel Task
+            </button>
+          ) : null}
+          <button className="primary-action" disabled={task.status === "draft" && !wallet.publicKey} onClick={act}>
           {task.status === "funded" ? <Play size={18} /> : <ArrowRight size={18} />}
           {actionLabel[task.status]}
-        </button>
+          </button>
+        </div>
       </section>
 
       <section className="split">
@@ -188,6 +215,7 @@ export function TaskDetail({ tasks, updateTask }: { tasks: AgentTask[]; updateTa
             ) : null}
           </div>
           <ProviderEvidence evidence={task.providerEvidence} />
+          {["funded", "running", "delivered", "approved", "paid"].includes(task.status) ? <AgentRunPanel status={task.status} /> : null}
           {task.deliverableSummary ? (
             <div className="panel">
               <h2>Agent Deliverable</h2>
