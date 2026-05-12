@@ -17,6 +17,18 @@ export type AgentProvider =
 
 export type SettlementMode = "onchain-anchor" | "demo-local";
 
+export type ReceiptProofMode = "anchor-account" | "memo-proof" | "demo-local";
+
+export interface ReceiptProof {
+  mode: ReceiptProofMode;
+  receiptHash?: string;
+  taskHash?: string;
+  deliverableHash?: string;
+  memoTx?: string;
+  verifiedAt?: string;
+  note?: string;
+}
+
 export interface ProviderEvidence {
   provider: AgentProvider;
   queryLabel: string;
@@ -67,5 +79,7 @@ export interface AgentTask {
   receiptHash?: string;
   escrowTx?: string;
   payoutTx?: string;
+  cancelTx?: string;
   onchain?: OnchainRefs;
+  proof?: ReceiptProof;
 }

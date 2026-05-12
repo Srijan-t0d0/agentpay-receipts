@@ -11,6 +11,7 @@ import { NewTask } from "./pages/NewTask";
 import { ReceiptPage } from "./pages/ReceiptPage";
 import { SubmitPage } from "./pages/SubmitPage";
 import { TaskDetail } from "./pages/TaskDetail";
+import { VerifyPage } from "./pages/VerifyPage";
 import type { AgentTask } from "./types";
 import "./styles.css";
 
@@ -41,6 +42,7 @@ function App() {
                 <Route path="/new" element={<NewTask onCreate={addTask} />} />
                 <Route path="/task/:id" element={<TaskDetail tasks={tasks} updateTask={updateTask} />} />
                 <Route path="/receipt/:id" element={<ReceiptPage tasks={tasks} />} />
+                <Route path="/verify/:hash" element={<VerifyPage tasks={tasks} />} />
                 <Route path="/submit" element={<SubmitPage />} />
               </Routes>
             </Shell>

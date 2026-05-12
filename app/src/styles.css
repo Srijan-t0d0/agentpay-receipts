@@ -70,6 +70,41 @@ nav a:hover,
   color: var(--muted);
 }
 
+.wallet-badge {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: 8px;
+  align-items: center;
+  min-width: 178px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 7px 9px;
+  color: var(--muted);
+}
+
+.wallet-badge[data-state="connected"] {
+  color: var(--accent);
+  border-color: rgba(55, 255, 139, 0.4);
+}
+
+.wallet-badge span,
+.wallet-badge small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.wallet-badge span {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.wallet-badge small {
+  margin-top: 2px;
+  font-size: 11px;
+}
+
 .wallet-adapter-button {
   height: 40px !important;
   border-radius: 4px !important;
@@ -395,19 +430,84 @@ pre {
 }
 
 .check-list,
-.plain-list {
+.plain-list,
+.verify-list,
+.run-sequence {
   display: grid;
   gap: 10px;
   padding-left: 18px;
 }
 
-.check-list {
+.check-list,
+.verify-list,
+.run-sequence {
   padding-left: 0;
 }
 
 .check-list span {
   border-left: 3px solid var(--accent);
   padding-left: 10px;
+}
+
+.verify-row,
+.run-step,
+.empty-state {
+  display: grid;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.18);
+  padding: 12px;
+}
+
+.verify-row {
+  grid-template-columns: 20px 1fr;
+}
+
+.verify-row svg,
+.run-step-active span,
+.empty-state svg {
+  color: var(--accent);
+}
+
+.verify-warning svg,
+.verify-demo svg {
+  color: var(--amber);
+}
+
+.verify-row span,
+.empty-state span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+.demo-note {
+  margin-top: 14px;
+  margin-bottom: 0;
+}
+
+.run-step {
+  grid-template-columns: 28px 1fr;
+}
+
+.run-step span {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.task-form-fields {
+  display: grid;
+  gap: 16px;
+}
+
+.empty-state {
+  justify-items: start;
 }
 
 .tone-warning strong {

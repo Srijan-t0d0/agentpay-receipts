@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { Bot, FileText, Plus, Receipt, Wallet } from "lucide-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { WalletBadge } from "./WalletBadge";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 export function Shell({ children }: { children: React.ReactNode }) {
@@ -23,6 +24,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </NavLink>
         </nav>
         <div className="wallet-wrap">
+          <WalletBadge />
           <Wallet size={16} />
           <WalletMultiButton />
         </div>

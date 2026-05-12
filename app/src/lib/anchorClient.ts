@@ -2,9 +2,9 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import idl from "../idl/agentpay_escrow.json";
+import { prefixedHash } from "./ids";
+import { deriveTaskPda as deriveTaskPdaHelper, PROGRAM_ID } from "./pda";
 import { CLUSTER, RPC_ENDPOINT } from "./solana";
-
-export const PROGRAM_ID = new PublicKey(idl.address);
 
 type WalletLike = {
   publicKey: PublicKey | null;
@@ -35,10 +35,73 @@ export function getProgram(wallet: WalletLike) {
 }
 
 export function deriveTaskPda(payer: PublicKey, taskId: number[]) {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("task"), payer.toBuffer(), Buffer.from(taskId)],
-    PROGRAM_ID,
-  )[0];
+  return deriveTaskPdaHelper(payer, taskId);
+}
+
+export type OnchainTaskEscrow = {
+  payer: string;
+  agent: string;
+  taskId: number[];
+  taskHash: string;
+  deliverableHash?: string;
+  receiptHash?: string;
+  amountLamports: string;
+  status: string;
+  createdAt: string;
+  fundedAt: string;
+  approvedAt: string;
+  paidAt: string;
+};
+
+const zeroHash = "0".repeat(64);
+
+function statusName(status: unknown) {
+  if (typeof status === "object" && status) {
+    const [key] = Object.keys(status as Record<string, unknown>);
+    return key ?? "unknown";
+  }
+  return String(status ?? "unknown");
+}
+
+function accountProgram() {
+  const readOnlyWallet = {
+    publicKey: PublicKey.default,
+    signTransaction: async () => {
+      throw new Error("Read-only Anchor client cannot sign transactions.");
+    },
+    signAllTransactions: async () => {
+      throw new Error("Read-only Anchor client cannot sign transactions.");
+    },
+  };
+  const provider = new anchor.AnchorProvider(getConnection(), readOnlyWallet, { commitment: "confirmed" });
+  return new Program(idl as anchor.Idl, provider) as Program;
+}
+
+export async function fetchTaskEscrowAccount(taskEscrowPda?: string): Promise<OnchainTaskEscrow | null> {
+  if (!taskEscrowPda) return null;
+
+  try {
+    const account = await (accountProgram().account as any).taskEscrow.fetch(new PublicKey(taskEscrowPda));
+    const deliverableHash = prefixedHash("dlv_", Array.from(account.deliverableHash as number[]));
+    const receiptHash = prefixedHash("rcpt_", Array.from(account.receiptHash as number[]));
+
+    return {
+      payer: account.payer.toBase58(),
+      agent: account.agent.toBase58(),
+      taskId: Array.from(account.taskId as number[]),
+      taskHash: prefixedHash("task_", Array.from(account.taskHash as number[])),
+      deliverableHash: deliverableHash.endsWith(zeroHash) ? undefined : deliverableHash,
+      receiptHash: receiptHash.endsWith(zeroHash) ? undefined : receiptHash,
+      amountLamports: account.amountLamports.toString(),
+      status: statusName(account.status),
+      createdAt: account.createdAt.toString(),
+      fundedAt: account.fundedAt.toString(),
+      approvedAt: account.approvedAt.toString(),
+      paidAt: account.paidAt.toString(),
+    };
+  } catch {
+    return null;
+  }
 }
 
 export async function createTaskOnchain(params: {
@@ -95,6 +158,17 @@ export async function releasePaymentOnchain(wallet: WalletLike, taskEscrow: stri
       taskEscrow: new PublicKey(taskEscrow),
       agent: new PublicKey(agentWallet),
       systemProgram: SystemProgram.programId,
+    })
+    .rpc();
+}
+
+export async function cancelTaskOnchain(wallet: WalletLike, taskEscrow: string) {
+  const program = getProgram(wallet);
+  return program.methods
+    .cancelTask()
+    .accounts({
+      payer: wallet.publicKey!,
+      taskEscrow: new PublicKey(taskEscrow),
     })
     .rpc();
 }
