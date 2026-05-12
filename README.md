@@ -64,13 +64,32 @@ Run the Anchor test suite:
 npm test
 ```
 
-Start the frontend:
+Start a local validator:
+
+```bash
+solana-test-validator --reset
+```
+
+In another terminal, fund the local deploy wallet and deploy the program:
+
+```bash
+solana airdrop 5 .anchor/test-wallet.json --url localhost
+anchor deploy --provider.cluster localnet --provider.wallet .anchor/test-wallet.json
+```
+
+Start the frontend against localnet:
 
 ```bash
 npm run dev
 ```
 
-The app runs against devnet by default. Seeded demo-local tasks are included for judges without a wallet.
+The app runs against localnet by default. To point it at devnet, use:
+
+```bash
+VITE_SOLANA_CLUSTER=devnet VITE_SOLANA_RPC_ENDPOINT=https://api.devnet.solana.com npm run dev
+```
+
+Seeded demo-local tasks are included for judges without a wallet.
 
 ## Prototype Notes
 
