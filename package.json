@@ -1,6 +1,12 @@
 {
+  "name": "agentpay-receipts",
   "license": "ISC",
   "scripts": {
+    "build": "anchor build && npm --prefix app run build",
+    "test": "anchor test",
+    "dev": "npm --prefix app run dev",
+    "app:build": "npm --prefix app run build",
+    "app:dev": "npm --prefix app run dev",
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
   },
