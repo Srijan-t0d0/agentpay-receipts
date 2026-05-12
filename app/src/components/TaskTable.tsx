@@ -14,6 +14,7 @@ export function TaskTable({ tasks }: { tasks: AgentTask[] }) {
             <th>Provider</th>
             <th>Amount</th>
             <th>Status</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -30,6 +31,13 @@ export function TaskTable({ tasks }: { tasks: AgentTask[] }) {
               </td>
               <td>
                 <StatusPill status={task.status} />
+              </td>
+              <td>
+                {task.status === "paid" ? (
+                  <Link className="table-action" to={`/receipt/${task.id}`}>Receipt</Link>
+                ) : (
+                  <Link className="table-action" to={`/task/${task.id}`}>View</Link>
+                )}
               </td>
             </tr>
           ))}

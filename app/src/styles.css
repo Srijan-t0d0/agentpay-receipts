@@ -34,7 +34,10 @@ nav a,
 .wallet-wrap,
 .inline-link,
 .primary-action,
-.secondary-action {
+.secondary-action,
+.hero-actions,
+.heading-actions,
+.seed-shortcut {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -257,6 +260,78 @@ p,
   color: var(--amber);
   border: 1px solid rgba(255, 176, 32, 0.45);
   padding: 5px 8px;
+}
+
+.demo-chip {
+  color: var(--danger);
+  border-color: rgba(255, 92, 92, 0.5);
+}
+
+.provider-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.provider-chip {
+  min-height: 82px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.18);
+  padding: 12px;
+}
+
+.provider-chip strong,
+.provider-chip span {
+  display: block;
+}
+
+.provider-chip strong {
+  color: var(--text);
+}
+
+.provider-chip span {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.seed-shortcut {
+  justify-content: space-between;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid rgba(55, 255, 139, 0.35);
+  background: rgba(55, 255, 139, 0.08);
+  padding: 13px;
+  font-weight: 800;
+}
+
+.activity-rail {
+  display: grid;
+  gap: 10px;
+}
+
+.activity-item {
+  display: grid;
+  grid-template-columns: 84px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.activity-item span,
+.activity-item small,
+.table-action {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.table-action {
+  color: var(--accent);
+  text-decoration: none;
 }
 
 .table-wrap {
@@ -533,6 +608,7 @@ pre {
   }
 
   .metrics,
+  .provider-strip,
   .split,
   .form-grid,
   .terms-grid,
