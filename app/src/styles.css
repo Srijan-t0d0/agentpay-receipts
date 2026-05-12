@@ -296,6 +296,22 @@ p,
   font-size: 13px;
 }
 
+.submission-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.submission-grid a {
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.18);
+  padding: 12px;
+  font-family: var(--mono);
+  overflow-wrap: anywhere;
+}
+
 .seed-shortcut {
   justify-content: space-between;
   color: var(--accent);
@@ -616,6 +632,7 @@ pre {
 
   .metrics,
   .provider-strip,
+  .submission-grid,
   .split,
   .form-grid,
   .terms-grid,

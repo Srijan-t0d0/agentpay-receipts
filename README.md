@@ -19,6 +19,16 @@ AgentPay gives every paid agent task an escrow-style approval flow and a public 
 5. Approve the deliverable hash onchain.
 6. Release payment to the agent wallet.
 7. Open the public receipt with hashes, timeline, escrow PDA, and transaction links.
+8. Open `/verify/:hash` to search the browser receipt cache and compare against the Anchor account when onchain state exists.
+
+For the fastest judging path, the dashboard includes a seeded paid task that links directly to a complete receipt page. It is marked as demo-local so generated transaction links are not mistaken for devnet settlement.
+
+## Submission Links
+
+- GitHub: `https://github.com/your-org/agentpay-receipts`
+- Live app: `https://agentpay-receipts.vercel.app`
+- Loom: `https://www.loom.com/share/agentpay-receipts-demo`
+- Colosseum: `https://www.colosseum.org/`
 
 ## Tracks
 
@@ -41,7 +51,36 @@ AgentPay gives every paid agent task an escrow-style approval flow and a public 
 programs/agentpay_escrow/   Anchor SOL escrow program
 tests/agentpay_escrow.ts    Anchor integration tests
 app/                        Vite React frontend
+app/public/screenshots/     Judge/demo screenshots placeholder
 ```
+
+## Judge Checklist
+
+- Seeded paid receipt is available from the dashboard without a wallet.
+- Wallet-created tasks use Phantom-compatible signing and the Anchor SOL escrow program.
+- Task, deliverable, and receipt hashes are shown on the receipt and verifier surfaces.
+- Demo-local receipts are explicitly labeled as local state with generated tx links.
+- Provider evidence is visible for Zerion, Covalent, Dune SIM, LPAgent, and Demo Agent flows.
+
+## 90-second Demo Script
+
+1. Show the dashboard, provider strip, activity rail, and seeded complete receipt shortcut.
+2. Create a task from the Wallet risk report preset and point out validation plus the live receipt preview.
+3. Connect Phantom and create/fund the Anchor escrow task on devnet or localnet.
+4. Run the agent, complete the three-step progress sequence, approve the deliverable hash, and release payment.
+5. Open the receipt and then `/verify/:hash` to show cache lookup and onchain hash comparison.
+
+## Why Solana
+
+AgentPay relies on cheap, fast, wallet-native settlement for small agent jobs. Solana account state lets the app store task, deliverable, and receipt hashes directly on the escrow account while keeping the public receipt inexpensive to verify.
+
+## What We Would Build Next
+
+- SPL token escrow for USDC and USDT.
+- Backend indexing for receipt search across payers, agents, and hashes.
+- Real provider integrations for Zerion, Covalent, Dune SIM, and LPAgent.
+- Revision, dispute, cancellation cleanup, and account close flows.
+- Production screenshot set in `app/public/screenshots/`.
 
 ## Run Locally
 
