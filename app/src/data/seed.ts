@@ -28,6 +28,13 @@ export const seedTasks: AgentTask[] = [
     receiptHash: "rcpt_a7959d6f3a4e73a7df5724d41ef8d0c6",
     escrowTx: makeTx(),
     payoutTx: makeTx(),
+    proof: {
+      mode: "demo-local",
+      receiptHash: "rcpt_a7959d6f3a4e73a7df5724d41ef8d0c6",
+      taskHash: "task_8f719d6e25b0d7ce5b6bb9af905a462c",
+      deliverableHash: "dlv_182c62b193790fbab4c1dd32e76e0bb8",
+      note: "Seeded paid receipt uses local state and fake tx links for a fast judge walkthrough.",
+    },
     deliverableSummary:
       "Wallet risk: Medium. Portfolio concentration is 72% in 2 assets with 14 swaps, 3 failed transactions, and 1 new token approval in the recent window.",
     deliverableJson: {

@@ -2,7 +2,9 @@ import { Copy, ExternalLink } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { ProviderEvidence } from "../components/ProviderEvidence";
 import { ReceiptCard } from "../components/ReceiptCard";
+import { ReceiptVerifier } from "../components/ReceiptVerifier";
 import { Timeline } from "../components/Timeline";
+import { copyText } from "../lib/clipboard";
 import { receiptPayload } from "../lib/receipts";
 import { explorerAddress, explorerTx } from "../lib/solana";
 import type { AgentTask } from "../types";
@@ -20,7 +22,7 @@ export function ReceiptPage({ tasks }: { tasks: AgentTask[] }) {
   }
 
   async function copyLink() {
-    await navigator.clipboard.writeText(window.location.href);
+    await copyText(window.location.href);
   }
 
   return (
@@ -39,14 +41,19 @@ export function ReceiptPage({ tasks }: { tasks: AgentTask[] }) {
       <section className="split">
         <div className="stack">
           <ReceiptCard task={task} />
+          <ReceiptVerifier hash={task.receiptHash} task={task} />
           <div className="panel">
-            <h2>Verification</h2>
+            <h2>Proof Mode</h2>
             <div className="check-list">
+              <span>Mode: {task.proof?.mode ?? (task.settlementMode === "demo-local" ? "demo-local" : "anchor-account")}</span>
               <span>Receipt hash: {task.receiptHash ? "present" : "missing"}</span>
               <span>Deliverable hash: {task.deliverableHash ? "present" : "missing"}</span>
               <span>Settlement: {task.settlementMode === "onchain-anchor" ? "Anchor SOL escrow" : "Demo-local seed"}</span>
               <span>Status: {task.status}</span>
             </div>
+            <p className="muted demo-note">
+              Seeded examples are intentionally local-state receipts with generated transaction links. Wallet-created tasks settle through the Anchor TaskEscrow account on devnet/localnet.
+            </p>
             {task.onchain?.taskEscrowPda ? (
               <a className="inline-link" href={explorerAddress(task.onchain.taskEscrowPda)} target="_blank" rel="noreferrer">
                 Open escrow account <ExternalLink size={14} />
@@ -65,6 +72,7 @@ export function ReceiptPage({ tasks }: { tasks: AgentTask[] }) {
             <h2>Receipt Payload</h2>
             <pre>{JSON.stringify(receiptPayload(task), null, 2)}</pre>
           </div>
+          {task.receiptHash ? <Link className="secondary-action" to={`/verify/${task.receiptHash}`}>Open Hash Verifier</Link> : null}
           <div className="panel">
             <h2>Timeline</h2>
             <Timeline task={task} />

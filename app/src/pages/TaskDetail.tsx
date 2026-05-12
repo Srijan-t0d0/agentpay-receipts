@@ -11,7 +11,7 @@ import { approveTaskOnchain, cancelTaskOnchain, createTaskOnchain, fundTaskOncha
 import { generateAgentRun } from "../lib/demoAgent";
 import { canonicalJson, hashBytes, hashHex, makeTx } from "../lib/hashes";
 import { taskIdBytes } from "../lib/ids";
-import { receiptPayload } from "../lib/receipts";
+import { receiptPayload, receiptProof } from "../lib/receipts";
 import { explorerTx, shortAddress } from "../lib/solana";
 import type { AgentTask } from "../types";
 
@@ -137,13 +137,18 @@ export function TaskDetail({ tasks, updateTask }: { tasks: AgentTask[]; updateTa
       releaseTx = await releasePaymentOnchain(wallet, task.onchain.taskEscrowPda, task.agentWallet, receiptHashBytes);
     }
 
-    updateTask({
+    const paidTask = {
       ...task,
       status: "paid",
       paidAt,
       receiptHash,
       payoutTx: releaseTx ?? makeTx(),
       onchain: task.onchain && releaseTx ? { ...task.onchain, releaseTx } : task.onchain,
+    } satisfies AgentTask;
+
+    updateTask({
+      ...paidTask,
+      proof: receiptProof(paidTask),
     });
   }
 
