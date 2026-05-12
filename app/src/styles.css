@@ -390,6 +390,13 @@ td small {
   gap: 16px;
 }
 
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
 label {
   display: grid;
   gap: 8px;
